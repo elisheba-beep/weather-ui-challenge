@@ -29,7 +29,7 @@ class SavedLocationsScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 24.0,
-            vertical: 40.0,
+            vertical: 53.0,
           ),
           child: Column(
             children: [
