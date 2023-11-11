@@ -52,6 +52,7 @@ class WeatherScreen extends StatelessWidget {
       ),
       endDrawer: Drawer(
         width: MediaQuery.of(context).size.width,
+        backgroundColor: const Color(0xFF391A49),
         child: const SavedLocationsScreen(),
       ),
       body: Container(
