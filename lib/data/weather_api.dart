@@ -2,18 +2,18 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:weather/data/api_key.dart';
 
 class NetworkHelper {
   NetworkHelper(this.lat, this.lon);
   final double lat;
   final double lon;
 
-  final String _APIkey = '1a835d389c261a317cd101ba80bbf32a';
 
   Future getWeather() async {
     try {
       final uri = Uri.parse(
-          'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$_APIkey');
+          'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$APIkey');
       print(uri);
       http.Response response = await http.get(uri);
       if (response.statusCode == 200) {
