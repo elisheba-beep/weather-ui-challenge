@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:weather/data/location_data.dart';
-import 'package:weather/screens/loading_screen.dart';
 import 'package:weather/screens/weather_screen.dart';
 
 void main() {
@@ -20,6 +19,8 @@ class WeatherApp extends StatelessWidget {
           useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,
-        home: const LoadingScreen());
+        home: WeatherScreen(
+          location: locationData[0].location,
+        ));
   }
 }

@@ -39,7 +39,6 @@ class SavedLocationsScreen extends StatelessWidget {
               const SizedBox(
                 height: 12,
               ),
-
               for (final data in locationData)
                 SavedLocationContainer(
                   onTap: () {
@@ -58,27 +57,6 @@ class SavedLocationsScreen extends StatelessWidget {
                   icon: Icons.sunny,
                   color: Colors.orange,
                 ),
-
-              // SavedLocationContainer(
-              //   onTap: () {},
-              //   location: 'London',
-              //   weather: 'Clouds',
-              //   humidity: '65%',
-              //   wind: '4.12km/h',
-              //   temp: '16',
-              //   icon: Icons.cloud,
-              //   color: Colors.white,
-              // ),
-              // SavedLocationContainer(
-              //   onTap: () {},
-              //   location: 'New York',
-              //   weather: 'Thunderstorm',
-              //   humidity: '34%',
-              //   wind: '9.26km/h',
-              //   temp: '25',
-              //   icon: Icons.cloudy_snowing,
-              //   color: Colors.white,
-              // ),
               const AddNewButton(),
             ],
           ),

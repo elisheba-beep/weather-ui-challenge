@@ -16,19 +16,19 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
+  // late variables
   late String locationImage;
   late double locationLatitude;
   late double locationLongitude;
-  late Future getData;
-  dynamic weatherData;
-  late double temp;
-  @override
-  void initState() {
-    super.initState();
-    getLocationData();
-  }
 
-  getLocationData() async {
+  // variables
+  dynamic weatherData;
+  int temp = 32;
+  bool isLoading = false;
+  bool errorOccured = false;
+
+// get location data function
+  Future getLocationData() async {
     for (final data in locationData) {
       if (data.location == widget.location) {
         locationImage = data.image;
@@ -36,12 +36,38 @@ class _WeatherScreenState extends State<WeatherScreen> {
         locationLongitude = data.lon;
       }
     }
+    setState(() {
+      isLoading = true;
+      errorOccured = false;
+    });
+
+    // network helper to get weather
     NetworkHelper networkHelper =
         NetworkHelper(locationLatitude, locationLongitude);
-    var weatherData = await networkHelper.getWeather();
-    weatherData = weatherData;
-    temp = weatherData['main']['temp'];
-    print(temp);
+    try {
+      var weatherData = await networkHelper.getWeather();
+      weatherData = weatherData;
+      temp = ((weatherData['main']['temp']) - 273).ceil();
+      print(temp);
+    } catch (e) {
+      setState(() {
+        errorOccured = true;
+        isLoading = false;
+      });
+      debugPrint(e.toString());
+      return;
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+// init state
+  @override
+  void initState() {
+    super.initState();
+    getLocationData();
   }
 
   @override
@@ -101,87 +127,77 @@ class _WeatherScreenState extends State<WeatherScreen> {
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(
-                top: 125.0, left: 24.0, right: 24.0, bottom: 24.0),
-            child: FutureBuilder(
-                future: getLocationData(),
-                builder: (context, snapshot) {
-                  print(snapshot.data);
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.data == null) {
-                      return const Center(
-                        child: Text('no data'),
-                      );
-                    } else {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Nov 07',
-                            style: TextStyle(color: Colors.white, fontSize: 40),
-                          ),
-                          const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Updated as of ',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
+              padding: const EdgeInsets.only(
+                  top: 125.0, left: 24.0, right: 24.0, bottom: 24.0),
+              child: isLoading
+                  ? const Center(
+                      child: SpinKitChasingDots(
+                        color: Colors.white,
+                        size: 70.0,
+                      ),
+                    )
+                  : errorOccured
+                      ? const Center(
+                          child: Text('no data'),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Nov 07',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 40),
+                            ),
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Updated as of ',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                '07/11/2023 11:23 PM',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
+                                Text(
+                                  '07/11/2023 11:23 PM',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 45,
-                          ),
-                          const Icon(
-                            Icons.sunny,
-                            color: Colors.orange,
-                            size: 45,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const Text(
-                            'Clear',
-                            style: TextStyle(color: Colors.white, fontSize: 40),
-                          ),
-                          Text(
-                            '$temp°ᶜ',
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 86),
-                          ),
-                          const SizedBox(
-                            height: 62,
-                          ),
-                          const CurrentWeatherDetailsRow(),
-                          const SizedBox(
-                            height: 28,
-                          ),
-                          const DailyWeatherContainer(),
-                        ],
-                      );
-                    }
-                  } else if (snapshot.connectionState == ConnectionState.none) {
-                    return Center(child: Text('${snapshot.error}'));
-                  }
-
-                  return const Center(
-                    child: SpinKitChasingDots(
-                      color: Colors.white,
-                      size: 70.0,
-                    ),
-                  );
-                }),
-          ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 45,
+                            ),
+                            const Icon(
+                              Icons.sunny,
+                              color: Colors.orange,
+                              size: 45,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            const Text(
+                              'Clear',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 40),
+                            ),
+                            Text(
+                              '$temp°ᶜ',
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 86),
+                            ),
+                            const SizedBox(
+                              height: 62,
+                            ),
+                            const CurrentWeatherDetailsRow(),
+                            const SizedBox(
+                              height: 28,
+                            ),
+                            const DailyWeatherContainer(),
+                          ],
+                        )),
         ),
       ),
     );
