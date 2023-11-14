@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:weather/data/location_data.dart';
+import 'package:weather/screens/loading_screen.dart';
 import 'package:weather/screens/weather_screen.dart';
 
 void main() {
@@ -12,13 +14,12 @@ class WeatherApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Weather App',
-      theme: ThemeData( 
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      debugShowCheckedModeBanner: false,
-      home: const WeatherScreen(),
-    );
+        title: 'Weather App',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        debugShowCheckedModeBanner: false,
+        home: const LoadingScreen());
   }
 }

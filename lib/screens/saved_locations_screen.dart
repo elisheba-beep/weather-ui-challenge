@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:weather/data/location_data.dart';
+import 'package:weather/screens/weather_screen.dart';
 import 'package:weather/widgets/add_new_button.dart';
 import 'package:weather/widgets/saved_location_container.dart';
 import 'package:weather/widgets/search_row.dart';
@@ -37,36 +39,46 @@ class SavedLocationsScreen extends StatelessWidget {
               const SizedBox(
                 height: 12,
               ),
-              SavedLocationContainer(
-                onTap: () {},
-                location: 'Paris',
-                weather: 'Clear',
-                humidity: '56%',
-                wind: '4.63km/h',
-                temp: '24',
-                icon: Icons.sunny,
-                color: Colors.orange,
-              ),
-              SavedLocationContainer(
-                onTap: () {},
-                location: 'London',
-                weather: 'Clouds',
-                humidity: '65%',
-                wind: '4.12km/h',
-                temp: '16',
-                icon: Icons.cloud,
-                color: Colors.white,
-              ),
-              SavedLocationContainer(
-                onTap: () {},
-                location: 'New York',
-                weather: 'Thunderstorm',
-                humidity: '34%',
-                wind: '9.26km/h',
-                temp: '25',
-                icon: Icons.cloudy_snowing,
-                color: Colors.white,
-              ),
+
+              for (final data in locationData)
+                SavedLocationContainer(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => WeatherScreen(
+                                  location: data.location,
+                                )));
+                  },
+                  location: data.location,
+                  weather: 'Clear',
+                  humidity: '56%',
+                  wind: '4.63km/h',
+                  temp: '24',
+                  icon: Icons.sunny,
+                  color: Colors.orange,
+                ),
+
+              // SavedLocationContainer(
+              //   onTap: () {},
+              //   location: 'London',
+              //   weather: 'Clouds',
+              //   humidity: '65%',
+              //   wind: '4.12km/h',
+              //   temp: '16',
+              //   icon: Icons.cloud,
+              //   color: Colors.white,
+              // ),
+              // SavedLocationContainer(
+              //   onTap: () {},
+              //   location: 'New York',
+              //   weather: 'Thunderstorm',
+              //   humidity: '34%',
+              //   wind: '9.26km/h',
+              //   temp: '25',
+              //   icon: Icons.cloudy_snowing,
+              //   color: Colors.white,
+              // ),
               const AddNewButton(),
             ],
           ),

@@ -1,10 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:weather/data/location_data.dart';
+import 'package:weather/data/weather_api.dart';
 import 'package:weather/screens/saved_locations_screen.dart';
 import 'package:weather/widgets/current_weather_details_row.dart';
 import 'package:weather/widgets/daily_weather_container.dart';
 
-class WeatherScreen extends StatelessWidget {
-  const WeatherScreen({super.key});
+class WeatherScreen extends StatefulWidget {
+  const WeatherScreen({super.key, required this.location});
+
+  final String location;
+
+  @override
+  State<WeatherScreen> createState() => _WeatherScreenState();
+}
+
+class _WeatherScreenState extends State<WeatherScreen> {
+  late String locationImage;
+  late double locationLatitude;
+  late double locationLongitude;
+  late Future getData;
+  dynamic weatherData;
+  late double temp;
+  @override
+  void initState() {
+    super.initState();
+    getLocationData();
+  }
+
+  getLocationData() async {
+    for (final data in locationData) {
+      if (data.location == widget.location) {
+        locationImage = data.image;
+        locationLatitude = data.lat;
+        locationLongitude = data.lon;
+      }
+    }
+    NetworkHelper networkHelper =
+        NetworkHelper(locationLatitude, locationLongitude);
+    var weatherData = await networkHelper.getWeather();
+    weatherData = weatherData;
+    temp = weatherData['main']['temp'];
+    print(temp);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,22 +52,22 @@ class WeatherScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         leadingWidth: 200,
         elevation: 0,
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 24.0, top: 24.0),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 24.0, top: 24.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.location_pin,
                 color: Colors.white,
                 size: 32,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8,
               ),
               Text(
-                'London',
-                style: TextStyle(
+                widget.location,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                 ),
@@ -57,69 +95,92 @@ class WeatherScreen extends StatelessWidget {
       ),
       body: Container(
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/images/london.png'), fit: BoxFit.cover),
+              image: AssetImage(locationImage), fit: BoxFit.cover),
         ),
-        child: const SingleChildScrollView(
+        child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
                 top: 125.0, left: 24.0, right: 24.0, bottom: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Nov 07',
-                  style: TextStyle(color: Colors.white, fontSize: 40),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Updated as of ',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+            child: FutureBuilder(
+                future: getLocationData(),
+                builder: (context, snapshot) {
+                  print(snapshot.data);
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.data == null) {
+                      return const Center(
+                        child: Text('no data'),
+                      );
+                    } else {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Nov 07',
+                            style: TextStyle(color: Colors.white, fontSize: 40),
+                          ),
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Updated as of ',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                '07/11/2023 11:23 PM',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 45,
+                          ),
+                          const Icon(
+                            Icons.sunny,
+                            color: Colors.orange,
+                            size: 45,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Text(
+                            'Clear',
+                            style: TextStyle(color: Colors.white, fontSize: 40),
+                          ),
+                          Text(
+                            '$temp°ᶜ',
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 86),
+                          ),
+                          const SizedBox(
+                            height: 62,
+                          ),
+                          const CurrentWeatherDetailsRow(),
+                          const SizedBox(
+                            height: 28,
+                          ),
+                          const DailyWeatherContainer(),
+                        ],
+                      );
+                    }
+                  } else if (snapshot.connectionState == ConnectionState.none) {
+                    return Center(child: Text('${snapshot.error}'));
+                  }
+
+                  return const Center(
+                    child: SpinKitChasingDots(
+                      color: Colors.white,
+                      size: 70.0,
                     ),
-                    Text(
-                      '07/11/2023 11:23 PM',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 45,
-                ),
-                Icon(
-                  Icons.sunny,
-                  color: Colors.orange,
-                  size: 45,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  'Clear',
-                  style: TextStyle(color: Colors.white, fontSize: 40),
-                ),
-                Text(
-                  '24°ᶜ',
-                  style: TextStyle(color: Colors.white, fontSize: 86),
-                ),
-                SizedBox(
-                  height: 62,
-                ),
-                CurrentWeatherDetailsRow(),
-                SizedBox(
-                  height: 28,
-                ),
-                DailyWeatherContainer(),
-              ],
-            ),
+                  );
+                }),
           ),
         ),
       ),
