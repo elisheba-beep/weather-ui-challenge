@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:weather/data/location_data.dart';
 import 'package:weather/data/weather_api.dart';
 import 'package:weather/screens/saved_locations_screen.dart';
@@ -21,11 +22,21 @@ class _WeatherScreenState extends State<WeatherScreen> {
   late double locationLatitude;
   late double locationLongitude;
 
-  // variables
+  // variables from the api
   dynamic weatherData;
   int temp = 32;
+  double wind = 4.6;
+  int humidity = 84;
+  int feelsLike = 22;
+  String weatherMain = 'Clear';
+  String iconCode = '03d';
+
+  // variables to check if data is gotten
   bool isLoading = false;
   bool errorOccured = false;
+
+  // date
+  final now = DateTime.now();
 
 // get location data function
   Future getLocationData() async {
@@ -48,7 +59,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
       var weatherData = await networkHelper.getWeather();
       weatherData = weatherData;
       temp = ((weatherData['main']['temp']) - 273).ceil();
-      print(temp);
+      humidity = weatherData['main']['humidity'];
+      wind = weatherData['wind']['speed'];
+      weatherMain = weatherData['weather'][0]['main'];
+      iconCode = weatherData['weather'][0]['icon'];
+      feelsLike = ((weatherData['main']['feels_like']) - 273).ceil();
     } catch (e) {
       setState(() {
         errorOccured = true;
@@ -70,6 +85,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     getLocationData();
   }
 
+// build
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,6 +145,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           child: Padding(
               padding: const EdgeInsets.only(
                   top: 125.0, left: 24.0, right: 24.0, bottom: 24.0),
+              // check if data is loaded
               child: isLoading
                   ? const Center(
                       child: SpinKitChasingDots(
@@ -143,15 +160,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Text(
-                              'Nov 07',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 40),
+                            Text(
+                              (DateFormat('MMMd')).format(now),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 40),
                             ),
-                            const Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
+                                const Text(
                                   'Updated as of ',
                                   style: TextStyle(
                                     color: Colors.white,
@@ -159,8 +176,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '07/11/2023 11:23 PM',
-                                  style: TextStyle(
+                                  DateFormat('d/M/y').add_jm().format(now),
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                   ),
@@ -168,20 +185,18 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               ],
                             ),
                             const SizedBox(
-                              height: 45,
+                              height: 25,
                             ),
-                            const Icon(
-                              Icons.sunny,
-                              color: Colors.orange,
-                              size: 45,
-                            ),
+                            Image(
+                                image: NetworkImage(
+                                    'https://openweathermap.org/img/wn/$iconCode@2x.png')),
                             const SizedBox(
                               height: 20,
                             ),
-                            const Text(
-                              'Clear',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 40),
+                            Text(
+                              weatherMain,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 40),
                             ),
                             Text(
                               '$temp°ᶜ',
@@ -191,7 +206,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             const SizedBox(
                               height: 62,
                             ),
-                            const CurrentWeatherDetailsRow(),
+                            CurrentWeatherDetailsRow(
+                              humidity: humidity,
+                              wind: wind,
+                              feelsLike: feelsLike,
+                            ),
                             const SizedBox(
                               height: 28,
                             ),

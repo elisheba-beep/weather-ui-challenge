@@ -4,28 +4,34 @@ import 'package:weather/widgets/current_weather_detail_tile.dart';
 
 class CurrentWeatherDetailsRow extends StatelessWidget {
   const CurrentWeatherDetailsRow({
+    required this.wind,
+    required this.humidity,
+    required this.feelsLike,
     super.key,
   });
+  final double wind;
+  final int humidity;
+  final int feelsLike;
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CurrentWeatherDetailTile(
           icon: Icons.water_drop_outlined,
           text: 'HUMIDITY',
-          value: '56%',
+          value: '$humidity%',
         ),
         CurrentWeatherDetailTile(
           icon: CupertinoIcons.wind,
           text: 'WIND',
-          value: '4.63km/h',
+          value: '$wind km/h',
         ),
         CurrentWeatherDetailTile(
           icon: Icons.thermostat,
           text: 'FEELS LIKE',
-          value: '22°',
+          value: '$feelsLike°',
         ),
       ],
     );
