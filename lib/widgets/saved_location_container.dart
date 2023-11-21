@@ -18,7 +18,7 @@ class SavedLocationContainer extends StatelessWidget {
   final String humidity;
   final String wind;
   final String temp;
-  final IconData icon;
+  final String icon;
   final Color color;
   final void Function() onTap;
 
@@ -103,11 +103,9 @@ class SavedLocationContainer extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Icon(
-                      icon,
-                      color: color,
-                      size: 32,
-                    ),
+                     Image(
+                        image: NetworkImage(
+                            'https://openweathermap.org/img/wn/$icon@2x.png')),
                     Text(
                       '$temp°ᶜ',
                       style: const TextStyle(

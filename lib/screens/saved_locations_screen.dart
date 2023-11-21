@@ -54,7 +54,7 @@ class SavedLocationsScreen extends StatelessWidget {
                   humidity: '56%',
                   wind: '4.63km/h',
                   temp: '24',
-                  icon: Icons.sunny,
+                  icon: '03d',
                   color: Colors.orange,
                 ),
               const AddNewButton(),
